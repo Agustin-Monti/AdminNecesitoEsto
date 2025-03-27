@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { getDemandasPendientes } from "@/actions/demanda-actions"; // Importa la función
 import DemandasTable from "@/components/DemandasTable"; // Importa el componente de la tabla
 import HeaderAdmin from "@/components/HeaderAdmin";
+import Sidebar from "@/components/Sidebar";
 
 
 export default function DemandasPage() {
@@ -20,15 +21,18 @@ export default function DemandasPage() {
   }, []);
 
   return (
-
-    <div>
-      {/* Incluye el HeaderAdmin en la parte superior */}
-      <HeaderAdmin />
-
-      <div className="p-6">
-        <h1 className="text-2xl font-semibold mb-4">Demandas Pendientes</h1>
-        {/* Pasar demandas y setDemandas al componente DemandasTable */}
-        <DemandasTable demandas={demandas} setDemandas={setDemandas} />
+    <div className="flex min-h-screen">
+      {/* Sidebar fijo a la izquierda */}
+      <Sidebar />
+      
+      {/* Contenido principal que se desplazará */}
+      <div className="flex-1 ml-64"> {/* ml-64 para compensar el ancho del sidebar */}
+        <HeaderAdmin />
+        
+        <div className="p-6">
+          <h1 className="text-2xl font-semibold mb-4">Demandas Pendientes</h1>
+          <DemandasTable demandas={demandas} setDemandas={setDemandas} />
+        </div>
       </div>
     </div>
   );
