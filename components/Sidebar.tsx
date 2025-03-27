@@ -14,11 +14,11 @@ export default function Sidebar() {
   const pathname = usePathname();
 
   const links = [
-    { href: "/admin", label: "Inicio", icon: <Home className="h-5 w-5" /> },
-    { href: "/admin/demandas", label: "Demandas", icon: <ClipboardList className="h-5 w-5" /> },
-    { href: "/admin/categorias", label: "Categorías", icon: <Folder className="h-5 w-5" /> },
-    { href: "/admin/rubros", label: "Rubros", icon: <Tag className="h-5 w-5" /> },
-    { href: "/admin/pagos", label: "Pagos", icon: <CreditCard className="h-5 w-5" /> },
+    { href: "/", label: "Inicio", icon: <Home className="h-5 w-5" /> },
+    { href: "/demandas", label: "Demandas", icon: <ClipboardList className="h-5 w-5" /> },
+    { href: "/categorias", label: "Categorías", icon: <Folder className="h-5 w-5" /> },
+    { href: "/rubros", label: "Rubros", icon: <Tag className="h-5 w-5" /> },
+    { href: "/pagos", label: "Pagos", icon: <CreditCard className="h-5 w-5" /> },
   ];
 
   return (
