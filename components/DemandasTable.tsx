@@ -9,6 +9,8 @@ interface Demanda {
   detalle: string;
   fecha_inicio: string;
   estado: string;
+  email_contacto: string;
+  responsable_solicitud: string;
 }
 
 interface DemandasTableProps {
@@ -34,16 +36,54 @@ export default function DemandasTable({ demandas, setDemandas  }: DemandasTableP
 
   const handleAceptarDemanda = async (id: number) => {
     console.log("Aceptando demanda con ID:", id);
-  
-    const updatedDemanda = await actualizarDemanda(id);
-  
-    if (updatedDemanda) {
-      alert("✅ Demanda aceptada correctamente");
-      window.location.reload(); // Recarga la página para actualizar la tabla
-    } else {
+    
+    try {
+      // 1. Primero actualizamos el estado de la demanda
+      const updatedDemanda = await actualizarDemanda(id);
+      
+      if (!updatedDemanda) {
+        throw new Error("Error al actualizar la demanda");
+      }
+      
+      // 2. Buscamos los datos de la demanda para el correo
+      const demanda = demandas.find(d => d.id === id);
+      if (!demanda) {
+        throw new Error("No se encontró la demanda");
+      }
+      
+      // 3. Enviamos el correo de aceptación
+      const mailResponse = await fetch('/api/mail-aceptada', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          email_contacto: demanda.email_contacto,
+          responsable_solicitud: demanda.responsable_solicitud,
+          demanda_id: demanda.id,
+          demanda_detalle: demanda.detalle,
+        }),
+      });
+      
+      const mailResult = await mailResponse.json();
+      
+      if (!mailResponse.ok) {
+        console.error("Error en el envío de correo:", mailResult.message);
+        alert("✅ Demanda aceptada, pero hubo un error al enviar el correo de notificación");
+      } else {
+        alert("✅ Demanda aceptada y notificación enviada correctamente");
+      }
+      
+      // 4. Actualizamos el estado local o recargamos
+      setDemandas(demandas.filter(d => d.id !== id)); // Eliminamos la demanda aceptada de la lista
+      // O si prefieres recargar:
+      // window.location.reload();
+      
+    } catch (error) {
+      console.error("Error en el proceso de aceptación:", error);
       alert("❌ Hubo un error al aceptar la demanda");
     }
-  
+    
     handleCerrarModal();
   };
   
