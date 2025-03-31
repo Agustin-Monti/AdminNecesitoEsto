@@ -10,6 +10,8 @@ interface PagoDetalle {
     id: number;
     monto: number;
     fecha_pago: string;
+    nombre_pagador:string;
+    correo_pagador:string;
     metodo_pago: string;
     estado_pago: string;
   }
