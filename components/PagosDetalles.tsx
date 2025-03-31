@@ -6,6 +6,8 @@ interface PagoDetalle {
   id: number;
   monto: number;
   fecha_pago: string;
+  nombre_pagador:string;
+  correo_pagador:string;
   metodo_pago: string;
   estado_pago: string;
 }
@@ -29,6 +31,17 @@ interface PagosDetallesProps {
 
 export default function PagosDetalles({ pagos, loading }: PagosDetallesProps) {
   const [expandedDemanda, setExpandedDemanda] = useState<number | null>(null);
+  const [ordenPagos, setOrdenPagos] = useState<'asc' | 'desc'>('desc');
+
+  const toggleOrdenPagos = () => {
+    setOrdenPagos(ordenPagos === 'asc' ? 'desc' : 'asc');
+  };
+
+  const pagosOrdenados = [...pagos].sort((a, b) => {
+    return ordenPagos === 'asc' 
+      ? a.cantidad_pagos - b.cantidad_pagos 
+      : b.cantidad_pagos - a.cantidad_pagos;
+  });
 
   const toggleExpand = (demandaId: number) => {
     setExpandedDemanda(expandedDemanda === demandaId ? null : demandaId);
@@ -50,7 +63,12 @@ export default function PagosDetalles({ pagos, loading }: PagosDetallesProps) {
             <th className="px-4 py-3">ID Demanda</th>
             <th className="px-4 py-3">Título</th>
             <th className="px-4 py-3">Creador</th>
-            <th className="px-4 py-3">Pagos</th>
+            <th 
+              className="px-4 py-3 cursor-pointer hover:bg-gray-700"
+              onClick={toggleOrdenPagos}
+            >
+              Pagos {ordenPagos === 'asc' ? '↑' : '↓'}
+            </th>
             <th className="px-4 py-3">Total Pagado</th>
             <th className="px-4 py-3">Último Pago</th>
             <th className="px-4 py-3">Estado</th>
@@ -58,7 +76,7 @@ export default function PagosDetalles({ pagos, loading }: PagosDetallesProps) {
           </tr>
         </thead>
         <tbody>
-          {pagos.map((pago) => (
+          {pagosOrdenados.map((pago) => (
             <>
               <tr key={pago.demanda_id} className="hover:bg-gray-50">
                 <td className="border px-4 py-2">{pago.demanda_id}</td>
@@ -106,7 +124,8 @@ export default function PagosDetalles({ pagos, loading }: PagosDetallesProps) {
                           <tr className="bg-gray-200">
                             <th className="px-3 py-1 text-left">ID Pago</th>
                             <th className="px-3 py-1 text-left">Monto</th>
-                            <th className="px-3 py-1 text-left">Fecha</th>
+                            <th className="px-3 py-1 text-left">Pagador</th>
+                            <th className="px-3 py-1 text-left">Fecha de Pago</th>
                             <th className="px-3 py-1 text-left">Método</th>
                             <th className="px-3 py-1 text-left">Estado</th>
                           </tr>
@@ -116,6 +135,12 @@ export default function PagosDetalles({ pagos, loading }: PagosDetallesProps) {
                             <tr key={detalle.id} className="border-b border-gray-200">
                               <td className="px-3 py-1">{detalle.id}</td>
                               <td className="px-3 py-1">${detalle.monto.toFixed(2)}</td>
+                              <td className="px-3 py-1">
+                                <div>
+                                  <p>{detalle.nombre_pagador}</p>
+                                  <p className="text-sm text-gray-600">{detalle.correo_pagador}</p>
+                                </div>
+                              </td>
                               <td className="px-3 py-1">
                                 {new Date(detalle.fecha_pago).toLocaleDateString()}
                               </td>
