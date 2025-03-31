@@ -21,6 +21,17 @@ interface DemandasTableProps {
 export default function DemandasTable({ demandas, setDemandas  }: DemandasTableProps) {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedDemanda, setSelectedDemanda] = useState<Demanda | null>(null);
+  const [orden, setOrden] = useState<'asc' | 'desc'>('desc');
+
+  // Función para cambiar el orden
+  const toggleOrden = () => {
+    setOrden(orden === 'asc' ? 'desc' : 'asc');
+  };
+
+  // Ordenar las demandas
+  const demandasOrdenadas = [...demandas].sort((a, b) => {
+    return orden === 'asc' ? a.id - b.id : b.id - a.id;
+  });
 
   const handleViewDemanda = (demanda: Demanda) => {
     setSelectedDemanda(demanda);
@@ -109,7 +120,12 @@ export default function DemandasTable({ demandas, setDemandas  }: DemandasTableP
         <table className="min-w-full table-auto border-collapse">
           <thead>
             <tr className="bg-gray-800 text-white">
-              <th className="border-b px-4 py-2 text-left">ID</th>
+              <th 
+                className="border-b px-4 py-2 text-left cursor-pointer hover:bg-gray-700"
+                onClick={toggleOrden}
+              >
+                ID {orden === 'asc' ? '↑' : '↓'}
+              </th>
               <th className="border-b px-4 py-2 text-left">Descripción</th>
               <th className="border-b px-4 py-2 text-left">Fecha de Creación</th>
               <th className="border-b px-4 py-2 text-left">Estado</th>
@@ -117,7 +133,7 @@ export default function DemandasTable({ demandas, setDemandas  }: DemandasTableP
             </tr>
           </thead>
           <tbody>
-            {demandas.map((demanda) => (
+            {demandasOrdenadas.map((demanda) => (
               <tr
                 key={demanda.id}
                 className="hover:bg-gray-100 transition-colors duration-200"
