@@ -52,6 +52,10 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
           
           <p style="margin-top: 30px;">Atentamente,</p>
           <p><strong>Equipo de Administración</strong></p>
+
+          <br />
+        
+          <p>¡No reenviar este mail!</p>
         </div>
       `,
     };
