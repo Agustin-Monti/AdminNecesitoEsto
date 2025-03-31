@@ -6,6 +6,8 @@ interface PagoDetalle {
   id: number;
   monto: number;
   fecha_pago: string;
+  nombre_pagador:string;
+  correo_pagador:string;
   metodo_pago: string;
   estado_pago: string;
 }
@@ -37,6 +39,8 @@ export async function getPagosConsolidados(): Promise<PagoConsolidado[]> {
           id,
           monto,
           fecha_pago,
+          nombre_pagador,
+          correo_pagador,
           metodo_pago,
           estado_pago
         )
@@ -76,6 +80,8 @@ export async function getPagosByDemandaId(demandaId: number): Promise<PagoDetall
       id,
       monto,
       fecha_pago,
+      nombre_pagador,
+      correo_pagador,
       metodo_pago,
       estado_pago
     `)
