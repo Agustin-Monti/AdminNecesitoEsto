@@ -3,6 +3,7 @@
 import { useState } from "react";
 import ModalDemanda from "@/components/ModalDemanda";
 import { actualizarDemanda, eliminarDemanda } from "@/actions/demanda-actions";
+import LoadingModal from "@/components/LoadingModal";
 
 interface Demanda {
   id: number;
@@ -22,6 +23,8 @@ export default function DemandasTable({ demandas, setDemandas  }: DemandasTableP
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedDemanda, setSelectedDemanda] = useState<Demanda | null>(null);
   const [orden, setOrden] = useState<'asc' | 'desc'>('desc');
+  const [isDeleting, setIsDeleting] = useState(false);
+  const [deleteMessage, setDeleteMessage] = useState("");
 
   // Función para cambiar el orden
   const toggleOrden = () => {
@@ -100,17 +103,59 @@ export default function DemandasTable({ demandas, setDemandas  }: DemandasTableP
   
   const handleEliminarDemanda = async (id: number) => {
     console.log("Eliminando demanda con ID:", id);
-  
-    const eliminado = await eliminarDemanda(id);
-  
-    if (eliminado) {
-      alert("✅ Demanda eliminada correctamente");
-      window.location.reload(); // Recarga la página para actualizar la tabla
-    } else {
-      alert("❌ Hubo un error al eliminar la demanda");
+
+    setIsDeleting(true);
+    setDeleteMessage("Eliminando demanda...");
+    
+    try {
+      // 1. Primero eliminamos la demanda
+      const eliminado = await eliminarDemanda(id);
+      
+      if (!eliminado) {
+        throw new Error("Error al eliminar la demanda");
+      }
+      
+      // 2. Buscamos los datos de la demanda para el correo
+      setDeleteMessage("Enviando notificación...");
+      const demanda = demandas.find(d => d.id === id);
+      if (!demanda) {
+        throw new Error("No se encontró la demanda");
+      }
+      
+      // 3. Enviamos el correo de rechazo/eliminación
+      const mailResponse = await fetch('/api/mail-rechazada', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          email_contacto: demanda.email_contacto,
+          responsable_solicitud: demanda.responsable_solicitud,
+          demanda_id: demanda.id,
+          demanda_detalle: demanda.detalle,
+          motivo_rechazo: "La demanda no cumple con nuestros términos y condiciones para ser publicada."
+        }),
+      });
+      
+      if (!mailResponse.ok) {
+        const mailResult = await mailResponse.json();
+        throw new Error(mailResult.message || "Error al enviar correo");
+      }
+      
+      // 4. Actualizar estado
+      setDemandas(demandas.filter(d => d.id !== id));
+
+      // Feedback final
+      setDeleteMessage("¡Demanda eliminada con éxito!");
+      await new Promise(resolve => setTimeout(resolve, 1000)); // Muestra el mensaje de éxito brevemente
+      
+    } catch (error) {
+      setDeleteMessage("❌ Error: " + (error instanceof Error ? error.message : "Error desconocido"));
+      await new Promise(resolve => setTimeout(resolve, 3000)); // Muestra el error por más tiempo
+    } finally {
+      setIsDeleting(false);
+      handleCerrarModal();
     }
-  
-    handleCerrarModal();
   };
   
   
@@ -127,7 +172,7 @@ export default function DemandasTable({ demandas, setDemandas  }: DemandasTableP
                 ID {orden === 'asc' ? '↑' : '↓'}
               </th>
               <th className="border-b px-4 py-2 text-left">Descripción</th>
-              <th className="border-b px-4 py-2 text-left">Fecha de Creación</th>
+              <th className="border-b px-4 py-2 text-left">Fecha de Inicio</th>
               <th className="border-b px-4 py-2 text-left">Estado</th>
               <th className="border-b px-4 py-2 text-left">Acciones</th>
             </tr>
@@ -165,7 +210,12 @@ export default function DemandasTable({ demandas, setDemandas  }: DemandasTableP
             onAceptar={handleAceptarDemanda}
             onEliminar={handleEliminarDemanda}
         />
-        )}
+      )}
+
+      <LoadingModal 
+        isOpen={isDeleting} 
+        message={deleteMessage} 
+      />
 
     </div>
   );
