@@ -7,7 +7,8 @@ import {
   Folder,
   Tag,
   CreditCard,
-  Home
+  Home,
+  Users
 } from "lucide-react";
 
 export default function Sidebar() {
@@ -19,6 +20,7 @@ export default function Sidebar() {
     { href: "/categorias", label: "Categorías", icon: <Folder className="h-5 w-5" /> },
     { href: "/rubros", label: "Rubros", icon: <Tag className="h-5 w-5" /> },
     { href: "/pagos", label: "Pagos", icon: <CreditCard className="h-5 w-5" /> },
+    { href: "/usuarios", label: "Usuarios", icon: <Users className="h-5 w-5" /> },
   ];
 
   return (
