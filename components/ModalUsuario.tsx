@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { Check, X, ChevronDown, ChevronUp } from "lucide-react";
-import { obtenerNombrePais } from "@/actions/profile-actions";
+import { obtenerNombrePais } from "@/actions/usuarios-actions";
 
 interface ModalUsuarioProps {
   isOpen: boolean;
