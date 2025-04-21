@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { getUsuarios } from "@/actions/profile-actions";
+import { getUsuarios } from "@/actions/usuarios-actions";
 import UsuariosTable from "@/components/UsuariosTable"; // Import como default
 import HeaderAdmin from "@/components/HeaderAdmin";
 import Sidebar from "@/components/Sidebar";
