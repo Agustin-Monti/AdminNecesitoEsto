@@ -43,10 +43,11 @@ export default function ModalUsuario({
   
     if (!isOpen) return null;
   
-    // Cargar país al abrir el modal
-    if (nombrePais === "Cargando..." && isOpen) {
-      obtenerNombrePais(usuario.pais_id || "").then(setNombrePais);
-    }
+    useEffect(() => {
+      if (isOpen && nombrePais === "Cargando...") {
+        obtenerNombrePais(usuario.pais_id || "").then(setNombrePais);
+      }
+    }, [isOpen, nombrePais, usuario.pais_id]);
   
     const handleGuardar = async () => {
       setIsLoading(true);
@@ -62,7 +63,7 @@ export default function ModalUsuario({
   
     return (
       <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-        <div className="bg-white rounded-lg p-8 w-full max-w-4xl"> {/* Aumenté el ancho máximo */}
+        <div className="bg-white rounded-lg p-8 w-full max-w-4xl min-h-[70vh] max-h-[90vh] overflow-y-auto">
           <h2 className="text-2xl font-bold mb-6">Editar Usuario</h2>
           
           {error && (
