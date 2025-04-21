@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import ModalUsuario from "@/components/ModalUsuario";
-import { actualizarUsuario, eliminarUsuario } from "@/actions/profile-actions";
+import { actualizarUsuario, eliminarUsuario } from "@/actions/usuarios-actions";
 import LoadingModal from "@/components/LoadingModal";
 import { Check, X } from "lucide-react";
 
