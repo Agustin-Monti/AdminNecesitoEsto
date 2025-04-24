@@ -21,6 +21,7 @@ interface ModalUsuarioProps {
     localidad?: string;
     direccion?: string;
     codigo_postal?: string;
+    created_at: string;
   };
   onClose: () => void;
   onActualizar: (id: string, nuevoAdmin: boolean, nuevaDemandaGratis: boolean) => void;
@@ -48,6 +49,7 @@ export default function ModalUsuario({
         obtenerNombrePais(usuario.pais_id || "").then(setNombrePais);
       }
     }, [isOpen, nombrePais, usuario.pais_id]);
+    
   
     const handleGuardar = async () => {
       setIsLoading(true);
@@ -64,6 +66,7 @@ export default function ModalUsuario({
     return (
       <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
         <div className="bg-white rounded-lg p-8 w-full max-w-4xl min-h-[70vh] max-h-[90vh] overflow-y-auto">
+        {/* Aumenté el ancho máximo */}
           <h2 className="text-2xl font-bold mb-6">Editar Usuario</h2>
           
           {error && (
@@ -208,6 +211,18 @@ export default function ModalUsuario({
                       <p className="font-semibold mb-1">Código Postal:</p>
                       <p className="p-2 bg-gray-50 rounded border">
                         {usuario.codigo_postal || "No especificado"}
+                      </p>
+                    </div>
+                    <div>
+                      <p className="font-semibold mb-1">Fecha de Registro:</p>
+                      <p className="p-3 bg-gray-50 rounded border min-h-[3rem]">
+                        {new Date(usuario.created_at).toLocaleDateString("es-ES", {
+                          day: "2-digit",
+                          month: "2-digit",
+                          year: "numeric",
+                          hour: "2-digit",
+                          minute: "2-digit"
+                        })}
                       </p>
                     </div>
                   </div>
