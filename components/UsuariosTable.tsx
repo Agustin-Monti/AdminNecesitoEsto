@@ -139,12 +139,7 @@ export default function UsuariosTable({ usuarios, setUsuarios }: UsuariosTablePr
               >
                 ID {ordenColumna === 'id' ? (orden === 'asc' ? '↑' : '↓') : ''}
               </th>
-              <th
-                className="border-b px-4 py-2 text-left cursor-pointer hover:bg-gray-700"
-                onClick={() => cambiarOrdenColumna('nombre')}
-              >
-                Nombre {ordenColumna === 'nombre' ? (orden === 'asc' ? '↑' : '↓') : ''}
-              </th>
+              <th className="border-b px-4 py-2 text-left">Nombre</th>
               <th className="border-b px-4 py-2 text-left">Empresa</th>
               <th className="border-b px-4 py-2 text-left">Email</th>
               <th className="border-b px-4 py-2 text-left">Rol</th>
