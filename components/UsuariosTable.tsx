@@ -27,7 +27,7 @@ export default function UsuariosTable({ usuarios, setUsuarios }: UsuariosTablePr
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedUsuario, setSelectedUsuario] = useState<Usuario | null>(null);
   const [orden, setOrden] = useState<'asc' | 'desc'>('desc');
-  const [ordenColumna, setOrdenColumna] = useState<'id' | 'nombre'>('id');
+  const [ordenColumna, setOrdenColumna] = useState<'empresa'>('empresa');
   const [isDeleting, setIsDeleting] = useState(false);
   const [deleteMessage, setDeleteMessage] = useState("");
 
@@ -35,25 +35,17 @@ export default function UsuariosTable({ usuarios, setUsuarios }: UsuariosTablePr
     setOrden(orden === 'asc' ? 'desc' : 'asc');
   };
 
-  const cambiarOrdenColumna = (columna: 'id' | 'nombre') => {
-    if (ordenColumna === columna) {
-      toggleOrden();
-    } else {
-      setOrdenColumna(columna);
-      setOrden('desc');
-    }
+  const cambiarOrdenColumna = (columna: 'empresa') => {
+    toggleOrden();
   };
 
   const usuariosOrdenados = [...usuarios].sort((a, b) => {
-    if (ordenColumna === 'id') {
-      return orden === 'asc'
-        ? a.id.localeCompare(b.id)
-        : b.id.localeCompare(a.id);
-    } else {
-      return orden === 'asc'
-        ? a.nombre.localeCompare(b.nombre)
-        : b.nombre.localeCompare(a.nombre);
-    }
+    const empresaA = a.empresa?.toLowerCase() || '';
+    const empresaB = b.empresa?.toLowerCase() || '';
+
+    return orden === 'asc'
+      ? empresaA.localeCompare(empresaB)
+      : empresaB.localeCompare(empresaA);
   });
 
   const handleViewUsuario = (usuario: Usuario) => {
@@ -135,12 +127,11 @@ export default function UsuariosTable({ usuarios, setUsuarios }: UsuariosTablePr
             <tr className="bg-gray-800 text-white">
               <th
                 className="border-b px-4 py-2 text-left cursor-pointer hover:bg-gray-700"
-                onClick={() => cambiarOrdenColumna('id')}
+                onClick={() => cambiarOrdenColumna('empresa')}
               >
-                ID {ordenColumna === 'id' ? (orden === 'asc' ? '↑' : '↓') : ''}
+                Empresa {orden === 'asc' ? '↑' : '↓'}
               </th>
               <th className="border-b px-4 py-2 text-left">Nombre</th>
-              <th className="border-b px-4 py-2 text-left">Empresa</th>
               <th className="border-b px-4 py-2 text-left">Email</th>
               <th className="border-b px-4 py-2 text-left">Rol</th>
               <th className="border-b px-4 py-2 text-left">Demanda Gratis</th>
@@ -150,9 +141,8 @@ export default function UsuariosTable({ usuarios, setUsuarios }: UsuariosTablePr
           <tbody>
             {usuariosOrdenados.map((usuario) => (
               <tr key={usuario.id} className="hover:bg-gray-100 transition-colors duration-200">
-                <td className="border-b px-4 py-2">{usuario.id}</td>
+                <td className="border-b px-4 py-2">{usuario.empresa}</td>
                 <td className="border-b px-4 py-2">{usuario.nombre}</td>
-                <td className="border-b px-4 py-2">{usuario.empresa || 'No especificada'}</td>
                 <td className="border-b px-4 py-2">{usuario.email}</td>
                 <td className="border-b px-4 py-2">
                   <span className={`px-2 py-1 rounded-md text-xs font-medium ${
