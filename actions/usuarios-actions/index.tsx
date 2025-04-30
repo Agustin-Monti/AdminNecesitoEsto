@@ -21,40 +21,23 @@ export const getUsuarios = async () => {
 
   
 export async function actualizarUsuario(
-    id: string, 
-    updates: { 
-      admin?: boolean;
-      demanda_gratis?: boolean;
-    }
-  ) {
-    const supabase = await createClient();
-    
-    // Preparar los datos para Supabase - USANDO EL NOMBRE CORRECTO DE COLUMNA (admin)
-    const updatesToSend: any = {};
-    
-    if (updates.admin !== undefined) {
-      updatesToSend.admin = updates.admin; // Usamos 'admin' directamente
-    }
-    
-    if (updates.demanda_gratis !== undefined) {
-      updatesToSend.demanda_gratis = updates.demanda_gratis;
-    }
-    
-    console.log("Enviando a Supabase:", updatesToSend);
-  
-    const { data, error } = await supabase
-      .from("profile")
-      .update(updatesToSend)
-      .eq("id", id)
-      .select()
-      .single();
-  
-    if (error) {
-      console.error("Error de Supabase:", error);
-      throw new Error(`Error al actualizar usuario: ${error.message}`);
-    }
-  
-    return data;
+  id: string,
+  updates: { admin?: boolean; demanda_gratis?: boolean }
+) {
+  const baseUrl = process.env.NEXT_PUBLIC_BASE_URL;
+  const res = await fetch(`${baseUrl}/api/admin/actualizarUsuario`, {
+    method: 'PUT',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ id, updates }),
+  });
+
+  const data = await res.json();
+
+  if (!res.ok) {
+    throw new Error(`Error al actualizar usuario: ${data.error}`);
+  }
+
+  return data;
 }
   
 export async function eliminarUsuario(id: string) {
