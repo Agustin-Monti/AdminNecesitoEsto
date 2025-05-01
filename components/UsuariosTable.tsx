@@ -185,7 +185,6 @@ export default function UsuariosTable({ usuarios, setUsuarios }: UsuariosTablePr
           usuario={selectedUsuario}
           onClose={handleCerrarModal}
           onActualizar={handleActualizarRol}
-          onEliminar={handleEliminarUsuario}
         />
       )}
 
