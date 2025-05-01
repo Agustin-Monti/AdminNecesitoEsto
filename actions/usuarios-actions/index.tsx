@@ -41,19 +41,20 @@ export async function actualizarUsuario(
 }
   
 export async function eliminarUsuario(id: string) {
-    const supabase = await createClient();
-    
-    const { error } = await supabase
-      .from("profile")
-      .delete()
-      .eq("id", id);
-  
-    if (error) {
-      console.error("Error al eliminar usuario:", error);
-      return false;
-    }
-  
-    return true;
+  const baseUrl = process.env.NEXT_PUBLIC_BASE_URL;
+  const res = await fetch(`${baseUrl}/api/admin/eliminarUsuario`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ userId: id }),
+  });
+
+  const data = await res.json();
+
+  if (!res.ok) {
+    throw new Error(`Error al eliminar usuario: ${data.error}`);
+  }
+
+  return data;
 }
   
 export async function obtenerNombrePais(paisId: string) {
