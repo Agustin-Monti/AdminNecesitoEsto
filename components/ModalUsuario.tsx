@@ -25,7 +25,6 @@ interface ModalUsuarioProps {
   };
   onClose: () => void;
   onActualizar: (id: string, nuevoAdmin: boolean, nuevaDemandaGratis: boolean) => void;
-  onEliminar: (id: string) => void;
 }
 
 export default function ModalUsuario({
@@ -33,7 +32,6 @@ export default function ModalUsuario({
     usuario,
     onClose,
     onActualizar,
-    onEliminar,
   }: ModalUsuarioProps) {
     const [nuevoAdmin, setNuevoAdmin] = useState(usuario.admin);
     const [nuevaDemandaGratis, setNuevaDemandaGratis] = useState(usuario.demanda_gratis);
@@ -239,14 +237,6 @@ export default function ModalUsuario({
               className="px-6 py-2 bg-gray-200 text-gray-800 rounded-lg hover:bg-gray-300 transition-colors"
             >
               Cancelar
-            </button>
-            
-            <button
-              onClick={() => onEliminar(usuario.id)}
-              disabled={isLoading}
-              className="px-6 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition-colors"
-            >
-              Eliminar Usuario
             </button>
             
             <button
