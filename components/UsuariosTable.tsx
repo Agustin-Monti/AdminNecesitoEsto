@@ -19,6 +19,9 @@ interface Usuario {
   categorias?: {
     categoria: string;
   };
+  rubros?: {
+    nombre: string;
+  };
 }
 
 interface UsuariosTableProps {
@@ -137,6 +140,7 @@ export default function UsuariosTable({ usuarios, setUsuarios }: UsuariosTablePr
               <th className="border-b px-4 py-2 text-left">Nombre</th>
               <th className="border-b px-4 py-2 text-left">Email</th>
               <th className="border-b px-4 py-2 text-left">Categoria</th>
+              <th className="border-b px-4 py-2 text-left">Rubros</th>
               <th className="border-b px-4 py-2 text-left">Rol</th>
               <th className="border-b px-4 py-2 text-left">Demanda Gratis</th>
               <th className="border-b px-4 py-2 text-left">Acciones</th>
@@ -149,6 +153,7 @@ export default function UsuariosTable({ usuarios, setUsuarios }: UsuariosTablePr
                 <td className="border-b px-4 py-2">{usuario.nombre}</td>
                 <td className="border-b px-4 py-2">{usuario.email}</td>
                 <td className="border-b px-4 py-2">{usuario.categorias?.categoria || 'Sin categoría'}</td>
+                <td className="border-b px-4 py-2">{usuario.rubros?.nombre || 'Sin rubros'}</td>
                 <td className="border-b px-4 py-2">
                   <span className={`px-2 py-1 rounded-md text-xs font-medium ${
                     usuario.admin ? 'bg-purple-100 text-purple-800' : 'bg-blue-100 text-blue-800'
