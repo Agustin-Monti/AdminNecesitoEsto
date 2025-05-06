@@ -9,6 +9,9 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       *,
       categorias (
         categoria
+      ),
+      rubros (
+        nombre
       )
     `); // trae todos los perfiles
 
