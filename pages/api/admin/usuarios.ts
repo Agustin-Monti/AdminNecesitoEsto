@@ -5,7 +5,12 @@ import supabaseAdmin from '@/lib/supabaseAdmin';
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   const { data, error } = await supabaseAdmin
     .from('profile')
-    .select('*'); // trae todos los perfiles
+    .select(`
+      *,
+      categorias (
+        categoria
+      )
+    `); // trae todos los perfiles
 
   if (error) {
     return res.status(500).json({ message: 'Error al traer usuarios', error });
