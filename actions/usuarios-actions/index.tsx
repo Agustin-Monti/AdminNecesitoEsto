@@ -76,3 +76,17 @@ export async function obtenerNombrePais(paisId: string) {
       return "Error al cargar";
     }
 }
+
+export const getCategorias = async () => {
+  const baseUrl = process.env.NEXT_PUBLIC_BASE_URL;
+  const res = await fetch(`${baseUrl}/api/admin/categorias`);
+  const data = await res.json();
+  return data;
+};
+
+export const getRubros = async () => {
+  const baseUrl = process.env.NEXT_PUBLIC_BASE_URL;
+  const res = await fetch(`${baseUrl}/api/admin/rubros`);
+  const data = await res.json();
+  return data;
+};
