@@ -1,8 +1,8 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import ModalUsuario from "@/components/ModalUsuario";
-import { actualizarUsuario, eliminarUsuario } from "@/actions/usuarios-actions";
+import { actualizarUsuario, eliminarUsuario, getCategorias, getRubros } from "@/actions/usuarios-actions";
 import LoadingModal from "@/components/LoadingModal";
 import { Check, X } from "lucide-react";
 
@@ -37,13 +37,23 @@ export default function UsuariosTable({ usuarios, setUsuarios }: UsuariosTablePr
   const [isDeleting, setIsDeleting] = useState(false);
   const [deleteMessage, setDeleteMessage] = useState("");
 
+  const [categorias, setCategorias] = useState<{ id: string; categoria: string }[]>([]);
+  const [rubros, setRubros] = useState<{ id: string; nombre: string }[]>([]);
+  const [categoriaSeleccionada, setCategoriaSeleccionada] = useState<string>("");
+  const [rubroSeleccionado, setRubroSeleccionado] = useState<string>("");
+  const [busqueda, setBusqueda] = useState("");
+
+
+  useEffect(() => {
+    getCategorias().then(setCategorias).catch(console.error);
+    getRubros().then(setRubros).catch(console.error);
+  }, []);
+
   const toggleOrden = () => {
     setOrden(orden === 'asc' ? 'desc' : 'asc');
   };
 
-  const cambiarOrdenColumna = (columna: 'empresa') => {
-    toggleOrden();
-  };
+  
 
   const usuariosOrdenados = [...usuarios].sort((a, b) => {
     const empresaA = a.empresa?.toLowerCase() || '';
@@ -53,6 +63,30 @@ export default function UsuariosTable({ usuarios, setUsuarios }: UsuariosTablePr
       ? empresaA.localeCompare(empresaB)
       : empresaB.localeCompare(empresaA);
   });
+
+  const usuariosFiltrados = usuariosOrdenados.filter((usuario) => {
+    const busquedaLower = busqueda.toLowerCase();
+
+    const coincideBusqueda =
+      busqueda.trim() === "" ||
+      usuario.nombre?.toLowerCase().includes(busquedaLower) ||
+      usuario.apellido?.toLowerCase().includes(busquedaLower) ||
+      usuario.email?.toLowerCase().includes(busquedaLower) ||
+      usuario.empresa?.toLowerCase().includes(busquedaLower);
+
+    const coincideCategoria =
+      categoriaSeleccionada === "" ||
+      usuario.categorias?.categoria === categoriaSeleccionada;
+
+    const coincideRubro =
+      rubroSeleccionado === "" ||
+      usuario.rubros?.nombre === rubroSeleccionado;
+
+    return coincideBusqueda && coincideCategoria && coincideRubro;
+  });
+
+
+
 
   const handleViewUsuario = (usuario: Usuario) => {
     setSelectedUsuario(usuario);
@@ -95,6 +129,7 @@ export default function UsuariosTable({ usuarios, setUsuarios }: UsuariosTablePr
 
     try {
       const eliminado = await eliminarUsuario(id);
+      console.log('Usuario eliminado:', eliminado);
       if (!eliminado) throw new Error("Error al eliminar el usuario");
 
       setDeleteMessage("Enviando notificación...");
@@ -117,8 +152,8 @@ export default function UsuariosTable({ usuarios, setUsuarios }: UsuariosTablePr
       setDeleteMessage("¡Usuario eliminado con éxito!");
       await new Promise(resolve => setTimeout(resolve, 1000));
     } catch (error) {
+      console.error("Error al eliminar el usuario:", error);
       setDeleteMessage("❌ Error: " + (error instanceof Error ? error.message : "Error desconocido"));
-      await new Promise(resolve => setTimeout(resolve, 3000));
     } finally {
       setIsDeleting(false);
       handleCerrarModal();
@@ -128,67 +163,130 @@ export default function UsuariosTable({ usuarios, setUsuarios }: UsuariosTablePr
   return (
     <div>
       <div className="overflow-x-auto shadow-lg rounded-lg">
+        <div className="flex flex-col md:flex-row items-start md:items-end gap-4 mb-4">
+          <div className="flex-1">
+            <label className="block text-sm font-semibold">Buscar:</label>
+            <input
+              type="text"
+              placeholder="Buscar por nombre, empresa, email..."
+              value={busqueda}
+              onChange={(e) => setBusqueda(e.target.value)}
+              className="p-2 border rounded w-full"
+            />
+          </div>
+
+          <div>
+            <label className="block text-sm font-semibold">Filtrar por categoría:</label>
+            <select
+              value={categoriaSeleccionada}
+              onChange={(e) => setCategoriaSeleccionada(e.target.value)}
+              className="p-2 border rounded w-full"
+            >
+              <option value="">Todas</option>
+              {categorias.map((cat) => (
+                <option key={cat.id} value={cat.categoria}>{cat.categoria}</option>
+              ))}
+            </select>
+          </div>
+
+          <div>
+            <label className="block text-sm font-semibold">Filtrar por rubro:</label>
+            <select
+              value={rubroSeleccionado}
+              onChange={(e) => setRubroSeleccionado(e.target.value)}
+              className="p-2 border rounded w-full"
+            >
+              <option value="">Todos</option>
+              {rubros.map((r) => (
+                <option key={r.id} value={r.nombre}>{r.nombre}</option>
+              ))}
+            </select>
+          </div>
+
+          <div className="mt-1 md:mt-0">
+            <button
+              onClick={() => {
+                setBusqueda("");
+                setCategoriaSeleccionada("");
+                setRubroSeleccionado("");
+              }}
+              className="bg-red-500 text-white px-3 py-1 rounded hover:bg-red-700 transition-all text-sm"
+            >
+              Limpiar filtros
+            </button>
+          </div>
+        </div>
+
+
         <table className="min-w-full table-auto border-collapse">
           <thead>
             <tr className="bg-gray-800 text-white">
               <th
                 className="border-b px-4 py-2 text-left cursor-pointer hover:bg-gray-700"
-                onClick={() => cambiarOrdenColumna('empresa')}
+                onClick={toggleOrden}
               >
                 Empresa {orden === 'asc' ? '↑' : '↓'}
               </th>
               <th className="border-b px-4 py-2 text-left">Nombre</th>
               <th className="border-b px-4 py-2 text-left">Email</th>
-              <th className="border-b px-4 py-2 text-left">Categoria</th>
-              <th className="border-b px-4 py-2 text-left">Rubros</th>
+              <th className="border-b px-4 py-2 text-left">Categoría</th>
+              <th className="border-b px-4 py-2 text-left">Rubro</th>
               <th className="border-b px-4 py-2 text-left">Rol</th>
               <th className="border-b px-4 py-2 text-left">Demanda Gratis</th>
               <th className="border-b px-4 py-2 text-left">Acciones</th>
             </tr>
           </thead>
           <tbody>
-            {usuariosOrdenados.map((usuario) => (
-              <tr key={usuario.id} className="hover:bg-gray-100 transition-colors duration-200">
-                <td className="border-b px-4 py-2">{usuario.empresa}</td>
-                <td className="border-b px-4 py-2">{usuario.nombre}</td>
-                <td className="border-b px-4 py-2">{usuario.email}</td>
-                <td className="border-b px-4 py-2">{usuario.categorias?.categoria || 'Sin categoría'}</td>
-                <td className="border-b px-4 py-2">{usuario.rubros?.nombre || 'Sin rubros'}</td>
-                <td className="border-b px-4 py-2">
-                  <span className={`px-2 py-1 rounded-md text-xs font-medium ${
-                    usuario.admin ? 'bg-purple-100 text-purple-800' : 'bg-blue-100 text-blue-800'
-                  }`}>
-                    {usuario.admin ? 'Admin' : 'Usuario'}
-                  </span>
-                </td>
-                <td className="border-b px-4 py-2">
-                  {usuario.demanda_gratis ? (
-                    <Check className="h-5 w-5 text-green-500" />
-                  ) : (
-                    <X className="h-5 w-5 text-red-500" />
-                  )}
-                </td>
-                <td className="border-b px-4 py-2 text-center space-x-2">
-                  <button
-                    onClick={() => handleViewUsuario(usuario)}
-                    className="bg-blue-500 text-white px-3 py-1 rounded hover:bg-blue-700 transition-all text-sm"
-                  >
-                    Editar
-                  </button>
-                  <button
-                    onClick={() => handleEliminarUsuario(usuario.id)}
-                    className="bg-red-500 text-white px-3 py-1 rounded hover:bg-red-700 transition-all text-sm"
-                  >
-                    Eliminar
-                  </button>
+            {usuariosFiltrados.length > 0 ? (
+              usuariosFiltrados.map((usuario) => (
+                <tr key={usuario.id} className="hover:bg-gray-100 transition-colors duration-200">
+                  <td className="border-b px-4 py-2">{usuario.empresa}</td>
+                  <td className="border-b px-4 py-2">{usuario.nombre}</td>
+                  <td className="border-b px-4 py-2">{usuario.email}</td>
+                  <td className="border-b px-4 py-2">{usuario.categorias?.categoria || 'Sin categoría'}</td>
+                  <td className="border-b px-4 py-2">{usuario.rubros?.nombre || 'Sin rubros'}</td>
+                  <td className="border-b px-4 py-2">
+                    <span className={`px-2 py-1 rounded-md text-xs font-medium ${
+                      usuario.admin ? 'bg-purple-100 text-purple-800' : 'bg-blue-100 text-blue-800'
+                    }`}>
+                      {usuario.admin ? 'Admin' : 'Usuario'}
+                    </span>
+                  </td>
+                  <td className="border-b px-4 py-2">
+                    {usuario.demanda_gratis ? (
+                      <Check className="h-5 w-5 text-green-500" />
+                    ) : (
+                      <X className="h-5 w-5 text-red-500" />
+                    )}
+                  </td>
+                  <td className="border-b px-4 py-2 text-center space-x-2">
+                    <button
+                      onClick={() => handleViewUsuario(usuario)}
+                      className="bg-blue-500 text-white px-3 py-1 rounded hover:bg-blue-700 transition-all text-sm"
+                    >
+                      Editar
+                    </button>
+                    <button
+                      onClick={() => handleEliminarUsuario(usuario.id)}
+                      className="bg-red-500 text-white px-3 py-1 rounded hover:bg-red-700 transition-all text-sm"
+                    >
+                      Eliminar
+                    </button>
+                  </td>
+                </tr>
+              ))
+            ) : (
+              <tr>
+                <td colSpan={8} className="text-center text-gray-500 py-6">
+                  No se encontraron resultados.
                 </td>
               </tr>
-            ))}
+            )}
           </tbody>
+
         </table>
       </div>
 
-      {/* Modal de edición */}
       {isModalOpen && selectedUsuario && (
         <ModalUsuario
           isOpen={isModalOpen}
@@ -198,8 +296,8 @@ export default function UsuariosTable({ usuarios, setUsuarios }: UsuariosTablePr
         />
       )}
 
-      {/* Modal de carga/eliminación */}
       <LoadingModal isOpen={isDeleting} message={deleteMessage} />
     </div>
+    
   );
 }
