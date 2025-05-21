@@ -14,7 +14,39 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   }
 
   try {
-    // 1. Eliminar de tabla personalizada (por ejemplo, 'profiles')
+    // 0. Obtener demandas asociadas al perfil
+    const { data: demandas, error: demandasError } = await supabaseAdmin
+      .from('demandas')
+      .select('id')
+      .eq('profile_id', userId)
+
+    if (demandasError) {
+      return res.status(500).json({ error: 'Error al obtener demandas', detail: demandasError.message })
+    }
+
+    // 1. Eliminar pagos asociados a cada demanda
+    for (const demanda of demandas) {
+      const { error: deletePagosError } = await supabaseAdmin
+        .from('pagos')
+        .delete()
+        .eq('demanda_id', demanda.id)
+
+      if (deletePagosError) {
+        return res.status(500).json({ error: 'Error al eliminar pagos asociados', detail: deletePagosError.message })
+      }
+    }
+
+    // 2. Eliminar demandas asociadas al perfil
+    const { error: deleteDemandasError } = await supabaseAdmin
+      .from('demandas')
+      .delete()
+      .eq('profile_id', userId)
+
+    if (deleteDemandasError) {
+      return res.status(500).json({ error: 'Error al eliminar las demandas asociadas', detail: deleteDemandasError.message })
+    }
+
+    // 3. Eliminar perfil
     const { error: deleteProfileError } = await supabaseAdmin
       .from('profile')
       .delete()
@@ -24,7 +56,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       return res.status(500).json({ error: 'Error al eliminar del perfil', detail: deleteProfileError.message })
     }
 
-    // 2. Eliminar del sistema de auth
+    // 4. Eliminar usuario del sistema de auth
     const { error: deleteUserError } = await supabaseAdmin.auth.admin.deleteUser(userId)
 
     if (deleteUserError) {
