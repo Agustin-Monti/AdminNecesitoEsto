@@ -6,7 +6,11 @@ interface Demanda {
   id: number;
   detalle: string;
   fecha_inicio: string;
+  fecha_vencimiento: string;
   estado: string;
+  empresa: string;
+  responsable_solicitud: string;
+  email_contacto: string;
 }
 
 interface ModalDemandaProps {
@@ -38,6 +42,10 @@ export default function ModalDemanda({
           <p className="text-gray-500 font-medium"><strong className="text-black">ID:</strong> {demanda.id}</p>
           <p className="text-gray-500 font-medium"><strong className="text-black">Descripción:</strong> {demanda.detalle}</p>
           <p className="text-gray-500 font-medium"><strong className="text-black">Fecha de Creación:</strong> {demanda.fecha_inicio}</p>
+          <p className="text-gray-500 font-medium"><strong className="text-black">Fecha de Vencimiento:</strong> {demanda.fecha_vencimiento}</p>
+          <p className="text-gray-500 font-medium"><strong className="text-black">Empresa:</strong> {demanda.empresa}</p>
+          <p className="text-gray-500 font-medium"><strong className="text-black">Responsable:</strong> {demanda.responsable_solicitud}</p>
+          <p className="text-gray-500 font-medium"><strong className="text-black">Email:</strong> {demanda.email_contacto}</p>
           <p className="text-gray-500 font-medium"><strong className="text-black">Estado:</strong > {demanda.estado}</p>
         </div>
         <div className="bg-gray-50 px-4 py-3 flex justify-between sm:px-6 rounded-b-xl">
