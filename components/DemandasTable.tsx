@@ -9,9 +9,11 @@ interface Demanda {
   id: number;
   detalle: string;
   fecha_inicio: string;
+  fecha_vencimiento: string;
   estado: string;
   email_contacto: string;
   responsable_solicitud: string;
+  empresa:string;
 }
 
 interface DemandasTableProps {
@@ -172,7 +174,7 @@ export default function DemandasTable({ demandas, setDemandas  }: DemandasTableP
                 ID {orden === 'asc' ? '↑' : '↓'}
               </th>
               <th className="border-b px-4 py-2 text-left">Descripción</th>
-              <th className="border-b px-4 py-2 text-left">Fecha de Inicio</th>
+              <th className="border-b px-4 py-2 text-left">Fecha Vencimiento</th>
               <th className="border-b px-4 py-2 text-left">Estado</th>
               <th className="border-b px-4 py-2 text-left">Acciones</th>
             </tr>
@@ -185,7 +187,7 @@ export default function DemandasTable({ demandas, setDemandas  }: DemandasTableP
               >
                 <td className="border-b px-4 py-2">{demanda.id}</td>
                 <td className="border-b px-4 py-2">{demanda.detalle}</td>
-                <td className="border-b px-4 py-2">{demanda.fecha_inicio}</td>
+                <td className="border-b px-4 py-2">{demanda.fecha_vencimiento}</td>
                 <td className="border-b px-4 py-2">{demanda.estado}</td>
                 <td className="border-b px-4 py-2 text-center">
                   <button
