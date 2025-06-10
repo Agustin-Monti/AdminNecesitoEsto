@@ -18,6 +18,22 @@ export async function getDemandasPendientes() {
   return data || [];
 }
 
+export async function getDemandasAprobadas() {
+  const supabase = await createClient();
+
+  const { data, error } = await supabase
+    .from("demandas")
+    .select("*")
+    .eq("estado", "aprobada");
+
+  if (error) {
+    console.error("Error al obtener demandas pendientes:", error);
+    return [];
+  }
+
+  return data || [];
+}
+
 export async function actualizarDemanda(id: number) {
   const supabase = await createClient();
 
