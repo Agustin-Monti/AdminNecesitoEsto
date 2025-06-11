@@ -33,6 +33,7 @@ export default function UsuariosTable({ usuarios, setUsuarios }: UsuariosTablePr
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedUsuario, setSelectedUsuario] = useState<Usuario | null>(null);
   const [orden, setOrden] = useState<'asc' | 'desc'>('desc');
+  const [ordenFecha, setOrdenFecha] = useState<'' | 'asc' | 'desc'>('');
   const [ordenColumna, setOrdenColumna] = useState<'empresa'>('empresa');
   const [isDeleting, setIsDeleting] = useState(false);
   const [deleteMessage, setDeleteMessage] = useState("");
@@ -56,13 +57,19 @@ export default function UsuariosTable({ usuarios, setUsuarios }: UsuariosTablePr
   
 
   const usuariosOrdenados = [...usuarios].sort((a, b) => {
-    const empresaA = a.empresa?.toLowerCase() || '';
-    const empresaB = b.empresa?.toLowerCase() || '';
-
-    return orden === 'asc'
-      ? empresaA.localeCompare(empresaB)
-      : empresaB.localeCompare(empresaA);
+    if (ordenFecha) {
+      const fechaA = new Date(a.created_at).getTime();
+      const fechaB = new Date(b.created_at).getTime();
+      return ordenFecha === 'asc' ? fechaA - fechaB : fechaB - fechaA;
+    } else {
+      const empresaA = a.empresa?.toLowerCase() || '';
+      const empresaB = b.empresa?.toLowerCase() || '';
+      return orden === 'asc'
+        ? empresaA.localeCompare(empresaB)
+        : empresaB.localeCompare(empresaA);
+    }
   });
+
 
   const usuariosFiltrados = usuariosOrdenados.filter((usuario) => {
     const busquedaLower = busqueda.toLowerCase();
@@ -203,12 +210,28 @@ export default function UsuariosTable({ usuarios, setUsuarios }: UsuariosTablePr
             </select>
           </div>
 
+          <div>
+            <label className="block text-sm font-medium mb-1">Ordenar por fecha:</label>
+              <select
+                value={ordenFecha}
+                onChange={(e) => setOrdenFecha(e.target.value as 'asc' | 'desc' | '')}
+                className="p-2 border rounded w-full"
+              >
+                <option value="">(Sin orden por fecha)</option>
+                <option value="desc">Más reciente primero</option>
+                <option value="asc">Más antiguo primero</option>
+              </select>
+          </div>
+
+
           <div className="mt-1 md:mt-0">
             <button
               onClick={() => {
                 setBusqueda("");
                 setCategoriaSeleccionada("");
                 setRubroSeleccionado("");
+                setOrden('desc');
+                setOrdenFecha('');
               }}
               className="bg-red-500 text-white px-3 py-1 rounded hover:bg-red-700 transition-all text-sm"
             >
