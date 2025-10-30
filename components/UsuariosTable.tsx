@@ -285,7 +285,7 @@ export default function UsuariosTable({ usuarios, setUsuarios }: UsuariosTablePr
                   <td className="border-b px-4 py-2 text-center space-x-2">
                     <button
                       onClick={() => handleViewUsuario(usuario)}
-                      className="bg-blue-500 text-white px-3 py-1 rounded hover:bg-blue-700 transition-all text-sm"
+                      className="bg-blue-500 text-white px-3 py-1 rounded hover:bg-blue-700 transition-all text-sm mb-2"
                     >
                       Editar
                     </button>
@@ -324,3 +324,4 @@ export default function UsuariosTable({ usuarios, setUsuarios }: UsuariosTablePr
     
   );
 }
+
