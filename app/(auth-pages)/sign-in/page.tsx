@@ -1,49 +1,87 @@
+// app/sign-in/page.tsx
+"use client";
+
 import { signInAction } from "@/actions/auth-actions/actions";
-import { FormMessage, Message } from "@/components/form-message";
 import { SubmitButton } from "@/components/submit-button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import Link from "next/link";
+import { PasswordInput } from "@/components/password-input";
+import { useSearchParams } from "next/navigation";
+import { useEffect, useState } from "react";
+import { AlertCircle, CheckCircle2 } from "lucide-react";
 
+export default function Login() {
+  const searchParams = useSearchParams();
+  const [message, setMessage] = useState<{ type: 'success' | 'error', text: string } | null>(null);
 
-export default function Login({/*{ searchParams }: { searchParams: Message }*/}) {
+  useEffect(() => {
+    const error = searchParams?.get('error');
+    const success = searchParams?.get('success');
+    
+    if (error) {
+      setMessage({ type: 'error', text: decodeURIComponent(error) });
+    } else if (success) {
+      setMessage({ type: 'success', text: decodeURIComponent(success) });
+    }
+  }, [searchParams]);
+
   return (
-    <form className="flex flex-col mx-auto my-auto justify-center p-6 w-[80vw] md:w-[30vw] border-slate-950 border-2 rounded-md">
-      <h1 className="text-3xl font-semibold text-center mb-6">Iniciar Sesión</h1>
+    <div className="min-h-screen flex items-center justify-center p-4">
+      <form className="flex flex-col bg-white/80 backdrop-blur-sm p-8 w-full max-w-md rounded-2xl shadow-xl border border-white/20">
+        <h1 className="text-3xl font-bold text-center mb-2 text-gray-800">Admin Necesito Esto!</h1>
+        <p className="text-center text-gray-600 mb-8">Ingresa a tu cuenta de administrador</p>
 
-      <div className="flex flex-col gap-4 w-full">
-        <div className="flex flex-col gap-2">
-          <Label htmlFor="email" className="text-sm font-medium text-gray-700">Email</Label>
-          <Input
-          className="mt-1 block w-full rounded-md border-slate-950 border-b-2" 
-          name="email" placeholder="correo@correo.com" required />
-        </div>
+        {/* Mensajes de error/éxito */}
+        {message && (
+          <div className={`mb-6 p-4 rounded-lg flex items-center gap-3 ${
+            message.type === 'error' 
+              ? 'bg-red-50 border border-red-200 text-red-700' 
+              : 'bg-green-50 border border-green-200 text-green-700'
+          }`}>
+            {message.type === 'error' ? (
+              <AlertCircle className="h-5 w-5 flex-shrink-0" />
+            ) : (
+              <CheckCircle2 className="h-5 w-5 flex-shrink-0" />
+            )}
+            <span className="text-sm">{message.text}</span>
+          </div>
+        )}
 
-        <div className="flex justify-between items-center">
-          <Label htmlFor="password" className="text-sm font-medium text-gray-700">Contraseña</Label>
-          <Link
-            className="text-xs text-blue-600 underline"
-            href="/forgot-password"
+        <div className="flex flex-col gap-6 w-full">
+          <div className="flex flex-col gap-2">
+            <Label htmlFor="email" className="text-sm font-medium text-gray-600">
+              Email
+            </Label>
+            <Input
+              className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-all duration-200"
+              name="email"
+              type="email"
+              placeholder="correo@correo.com"
+              required
+            />
+          </div>
+
+          <div className="flex flex-col gap-2">
+            <Label htmlFor="password" className="text-sm font-medium text-gray-600">
+              Contraseña
+            </Label>
+            <PasswordInput
+              name="password"
+              placeholder="Tu Contraseña"
+              required
+              className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-all duration-200"
+            />
+          </div>
+
+          <SubmitButton
+            className="w-full bg-gradient-to-r from-blue-600 to-indigo-600 text-white font-semibold py-3 px-4 rounded-lg hover:from-blue-700 hover:to-indigo-700 transition-all duration-200 transform hover:scale-[1.02] shadow-lg hover:shadow-xl disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none"
+            pendingText="Verificando acceso..."
+            formAction={signInAction}
           >
-            Has olvidado su contraseña?
-          </Link>
+            Iniciar Sesión
+          </SubmitButton>
         </div>
-        
-        <div className="flex flex-col gap-2">
-          <Input
-            type="password"
-            name="password"
-            placeholder="Tú Contraseña"
-            required
-            className="mt-1 block w-full rounded-md border-slate-950 border-b-2" 
-          />
-        </div>
-
-        <SubmitButton className="bg-blue-500 text-white text-center mt-2 p-2 rounded-lg hover:bg-blue-600" pendingText="Accediendo..." formAction={signInAction}>
-          Iniciar Sesión
-        </SubmitButton>
-        {/*<FormMessage message={searchParams} />*/}
-      </div>
-    </form>
+      </form>
+    </div>
   );
 }
