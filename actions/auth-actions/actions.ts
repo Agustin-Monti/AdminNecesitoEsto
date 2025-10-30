@@ -91,7 +91,7 @@ export const signInAction = async (formData: FormData) => {
   }
 
   // Si todo está bien, redirigir al dashboard de demandas
-  return redirect("/demandas");
+  return redirect("/home");
 
 };
 
@@ -172,3 +172,4 @@ export const signOutAction = async () => {
   await supabase.auth.signOut();
   return redirect("/sign-in");
 };
+
