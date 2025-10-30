@@ -4,6 +4,7 @@ import { useState } from "react";
 import ModalDemanda from "@/components/ModalDemanda";
 import { actualizarDemanda, eliminarDemanda } from "@/actions/demanda-actions";
 import LoadingModal from "@/components/LoadingModal";
+import { ClipboardList, FileText } from "lucide-react";
 
 interface Demanda {
   id: number;
@@ -13,7 +14,7 @@ interface Demanda {
   estado: string;
   email_contacto: string;
   responsable_solicitud: string;
-  empresa:string;
+  empresa: string;
 }
 
 interface DemandasTableProps {
@@ -21,7 +22,7 @@ interface DemandasTableProps {
   setDemandas: React.Dispatch<React.SetStateAction<Demanda[]>>;
 }
 
-export default function DemandasTable({ demandas, setDemandas  }: DemandasTableProps) {
+export default function DemandasTable({ demandas, setDemandas }: DemandasTableProps) {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedDemanda, setSelectedDemanda] = useState<Demanda | null>(null);
   const [orden, setOrden] = useState<'asc' | 'desc'>('desc');
@@ -47,8 +48,6 @@ export default function DemandasTable({ demandas, setDemandas  }: DemandasTableP
     setIsModalOpen(false);
     setSelectedDemanda(null);
   };
-
-  
 
   const handleAceptarDemanda = async (id: number) => {
     console.log("Aceptando demanda con ID:", id);
@@ -92,8 +91,6 @@ export default function DemandasTable({ demandas, setDemandas  }: DemandasTableP
       
       // 4. Actualizamos el estado local o recargamos
       setDemandas(demandas.filter(d => d.id !== id)); // Eliminamos la demanda aceptada de la lista
-      // O si prefieres recargar:
-      // window.location.reload();
       
     } catch (error) {
       console.error("Error en el proceso de aceptación:", error);
@@ -159,7 +156,28 @@ export default function DemandasTable({ demandas, setDemandas  }: DemandasTableP
       handleCerrarModal();
     }
   };
-  
+
+  // Mensaje cuando no hay demandas
+  if (demandas.length === 0) {
+    return (
+      <div className="flex flex-col items-center justify-center py-12 px-4 text-center bg-white rounded-lg border border-gray-200 shadow-sm">
+        <div className="bg-blue-50 p-4 rounded-full mb-4">
+          <ClipboardList className="h-12 w-12 text-blue-500" />
+        </div>
+        <h3 className="text-xl font-semibold text-gray-800 mb-2">
+          No Hay Demandas Nuevas Creadas
+        </h3>
+        <p className="text-gray-600 max-w-md mb-4">
+          No se han encontrado nuevas demandas pendientes de revisión. 
+          Las demandas creadas por los usuarios aparecerán aquí para su aprobación.
+        </p>
+        <div className="flex items-center text-sm text-gray-500">
+          <FileText className="h-4 w-4 mr-2" />
+          <span>Estado: Sin demandas pendientes</span>
+        </div>
+      </div>
+    );
+  }
   
   return (
     <div>
@@ -218,7 +236,6 @@ export default function DemandasTable({ demandas, setDemandas  }: DemandasTableP
         isOpen={isDeleting} 
         message={deleteMessage} 
       />
-
     </div>
   );
 }
