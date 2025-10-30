@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { Check, X, ChevronDown, ChevronUp } from "lucide-react";
+import { Check, X, ChevronDown, ChevronUp, User, Mail, Building, Phone, MapPin, Calendar } from "lucide-react";
 import { obtenerNombrePais } from "@/actions/usuarios-actions";
 
 interface ModalUsuarioProps {
@@ -28,234 +28,273 @@ interface ModalUsuarioProps {
 }
 
 export default function ModalUsuario({
-    isOpen,
-    usuario,
-    onClose,
-    onActualizar,
-  }: ModalUsuarioProps) {
-    const [nuevoAdmin, setNuevoAdmin] = useState(usuario.admin);
-    const [nuevaDemandaGratis, setNuevaDemandaGratis] = useState(usuario.demanda_gratis);
-    const [isLoading, setIsLoading] = useState(false);
-    const [error, setError] = useState<string | null>(null);
-    const [showDatosAdicionales, setShowDatosAdicionales] = useState(false);
-    const [nombrePais, setNombrePais] = useState<string>("Cargando...");
-  
-    if (!isOpen) return null;
-  
-    useEffect(() => {
-      if (isOpen && nombrePais === "Cargando...") {
-        obtenerNombrePais(usuario.pais_id || "").then(setNombrePais);
-      }
-    }, [isOpen, nombrePais, usuario.pais_id]);
-    
-  
-    const handleGuardar = async () => {
-      setIsLoading(true);
-      setError(null);
-      try {
-        await onActualizar(usuario.id, nuevoAdmin, nuevaDemandaGratis);
-      } catch (err) {
-        setError("Error al guardar los cambios");
-      } finally {
-        setIsLoading(false);
-      }
-    };
-  
-    return (
-      <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-        <div className="bg-white rounded-lg p-8 w-full max-w-4xl min-h-[70vh] max-h-[90vh] overflow-y-auto">
-        {/* Aumenté el ancho máximo */}
-          <h2 className="text-2xl font-bold mb-6">Editar Usuario</h2>
-          
+  isOpen,
+  usuario,
+  onClose,
+  onActualizar,
+}: ModalUsuarioProps) {
+  const [nuevoAdmin, setNuevoAdmin] = useState(usuario.admin);
+  const [nuevaDemandaGratis, setNuevaDemandaGratis] = useState(usuario.demanda_gratis);
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [showDatosAdicionales, setShowDatosAdicionales] = useState(false);
+  const [nombrePais, setNombrePais] = useState<string>("Cargando...");
+
+  if (!isOpen) return null;
+
+  useEffect(() => {
+    if (isOpen && nombrePais === "Cargando...") {
+      obtenerNombrePais(usuario.pais_id || "").then(setNombrePais);
+    }
+  }, [isOpen, nombrePais, usuario.pais_id]);
+
+  const handleGuardar = async () => {
+    setIsLoading(true);
+    setError(null);
+    try {
+      await onActualizar(usuario.id, nuevoAdmin, nuevaDemandaGratis);
+    } catch (err) {
+      setError("Error al guardar los cambios");
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  return (
+    <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+      <div className="bg-white rounded-2xl shadow-2xl w-full max-w-4xl max-h-[90vh] overflow-hidden flex flex-col">
+        {/* Header */}
+        <div className="bg-gradient-to-r from-slate-900 to-slate-800 p-6">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center space-x-3">
+              <div className="p-2 bg-white/10 rounded-lg">
+                <User className="h-6 w-6 text-white" />
+              </div>
+              <div>
+                <h2 className="text-xl font-semibold text-white">Editar Usuario</h2>
+                <p className="text-slate-300 text-sm">{usuario.email}</p>
+              </div>
+            </div>
+            <button
+              onClick={onClose}
+              className="text-slate-300 hover:text-white transition-colors p-2 hover:bg-white/10 rounded-lg"
+            >
+              <X className="h-5 w-5" />
+            </button>
+          </div>
+        </div>
+
+        {/* Content */}
+        <div className="flex-1 overflow-y-auto p-6">
           {error && (
-            <div className="mb-4 p-3 bg-red-100 text-red-700 rounded-md">
+            <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded-xl text-red-700 text-sm">
               {error}
             </div>
           )}
-  
-          {/* Sección principal con grid de 2 columnas */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
             {/* Columna Izquierda - Información Básica */}
-            <div className="space-y-4">
-            <div className="grid grid-cols-2 gap-4">
-              <div className="col-span-2"> {/* Email ocupa 2 columnas */}
-                <p className="font-semibold mb-1">Email:</p>
-                <p className="p-3 bg-gray-50 rounded border min-h-[3rem] break-words">
-                  {usuario.email}
-                </p>
-              </div>
-            </div>
-
-            <div className="grid grid-cols-2 gap-4">
-              <div>
-                <p className="font-semibold mb-1">Nombre:</p>
-                <p className="p-3 bg-gray-50 rounded border min-h-[3rem]">
-                  {usuario.nombre}
-                </p>
-              </div>
-              <div>
-                <p className="font-semibold mb-1">Apellido:</p>
-                <p className="p-3 bg-gray-50 rounded border min-h-[3rem]">
-                  {usuario.apellido}
-                </p>
-              </div>
-            </div>
-
-            <div className="grid grid-cols-2 gap-4">
-              <div>
-                <p className="font-semibold mb-1">Empresa:</p>
-                <p className="p-3 bg-gray-50 rounded border min-h-[3rem]">
-                  {usuario.empresa || "No especificado"}
-                </p>
-              </div>
-              <div>
-                <p className="font-semibold mb-1">Teléfono:</p>
-                <p className="p-3 bg-gray-50 rounded border min-h-[3rem]">
-                  {usuario.telefono || "No especificado"}
-                </p>
-              </div>
-            </div>
-
-            <div>
-              <p className="font-semibold mb-1">País:</p>
-              <p className="p-3 bg-gray-50 rounded border min-h-[3rem]">
-                {nombrePais}
-              </p>
-            </div>
-            </div>
-  
-            {/* Columna Derecha - Configuraciones Editables */}
             <div className="space-y-6">
-              <div>
-                <label className="font-semibold block mb-2">Rol:</label>
+              <div className="bg-slate-50 rounded-xl p-1">
+                <div className="flex items-center space-x-3 p-3">
+                  <Mail className="h-5 w-5 text-slate-500" />
+                  <div className="flex-1">
+                    <p className="text-sm font-medium text-slate-700 mb-1">Email</p>
+                    <p className="text-slate-900 break-words">{usuario.email}</p>
+                  </div>
+                </div>
+              </div>
+
+              <div className="grid grid-cols-2 gap-4">
+                <div className="bg-slate-50 rounded-xl p-1">
+                  <div className="p-3">
+                    <p className="text-sm font-medium text-slate-700 mb-1">Nombre</p>
+                    <p className="text-slate-900">{usuario.nombre}</p>
+                  </div>
+                </div>
+                <div className="bg-slate-50 rounded-xl p-1">
+                  <div className="p-3">
+                    <p className="text-sm font-medium text-slate-700 mb-1">Apellido</p>
+                    <p className="text-slate-900">{usuario.apellido}</p>
+                  </div>
+                </div>
+              </div>
+
+              <div className="grid grid-cols-2 gap-4">
+                <div className="bg-slate-50 rounded-xl p-1">
+                  <div className="flex items-center space-x-3 p-3">
+                    <Building className="h-4 w-4 text-slate-500" />
+                    <div className="flex-1">
+                      <p className="text-sm font-medium text-slate-700 mb-1">Empresa</p>
+                      <p className="text-slate-900">{usuario.empresa || "No especificado"}</p>
+                    </div>
+                  </div>
+                </div>
+                <div className="bg-slate-50 rounded-xl p-1">
+                  <div className="flex items-center space-x-3 p-3">
+                    <Phone className="h-4 w-4 text-slate-500" />
+                    <div className="flex-1">
+                      <p className="text-sm font-medium text-slate-700 mb-1">Teléfono</p>
+                      <p className="text-slate-900">{usuario.telefono || "No especificado"}</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div className="bg-slate-50 rounded-xl p-1">
+                <div className="flex items-center space-x-3 p-3">
+                  <MapPin className="h-5 w-5 text-slate-500" />
+                  <div className="flex-1">
+                    <p className="text-sm font-medium text-slate-700 mb-1">País</p>
+                    <p className="text-slate-900">{nombrePais}</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Columna Derecha - Configuraciones */}
+            <div className="space-y-6">
+              {/* Rol */}
+              <div className="bg-white border border-slate-200 rounded-xl p-4">
+                <label className="block text-sm font-semibold text-slate-800 mb-3">Rol de Usuario</label>
                 <select
                   value={nuevoAdmin ? "admin" : "user"}
                   onChange={(e) => setNuevoAdmin(e.target.value === "admin")}
-                  className="border rounded-lg p-3 w-full"
                   disabled={isLoading}
+                  className="w-full p-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors bg-white"
                 >
-                  <option value="user">Usuario</option>
+                  <option value="user">Usuario Regular</option>
                   <option value="admin">Administrador</option>
                 </select>
               </div>
-              
-              <div>
-                <label className="font-semibold block mb-2">Demanda Gratis:</label>
-                <div className="flex space-x-4">
+
+              {/* Demanda Gratis */}
+              <div className="bg-white border border-slate-200 rounded-xl p-4">
+                <label className="block text-sm font-semibold text-slate-800 mb-3">Demanda Gratuita</label>
+                <div className="flex space-x-3">
                   <button
                     type="button"
                     onClick={() => setNuevaDemandaGratis(true)}
                     disabled={isLoading}
-                    className={`flex-1 flex items-center justify-center p-3 rounded-lg border ${
+                    className={`flex-1 flex items-center justify-center p-3 rounded-lg border-2 transition-all ${
                       nuevaDemandaGratis 
-                        ? "bg-green-50 border-green-500 text-green-800" 
-                        : "bg-gray-50 border-gray-300 text-gray-800"
+                        ? "bg-green-50 border-green-500 text-green-700 shadow-sm" 
+                        : "bg-white border-slate-300 text-slate-600 hover:border-slate-400"
                     }`}
                   >
-                    <Check className="h-5 w-5 mr-2" />
-                    Sí
+                    <Check className="h-4 w-4 mr-2" />
+                    Habilitada
                   </button>
                   <button
                     type="button"
                     onClick={() => setNuevaDemandaGratis(false)}
                     disabled={isLoading}
-                    className={`flex-1 flex items-center justify-center p-3 rounded-lg border ${
+                    className={`flex-1 flex items-center justify-center p-3 rounded-lg border-2 transition-all ${
                       !nuevaDemandaGratis 
-                        ? "bg-red-50 border-red-500 text-red-800" 
-                        : "bg-gray-50 border-gray-300 text-gray-800"
+                        ? "bg-red-50 border-red-500 text-red-700 shadow-sm" 
+                        : "bg-white border-slate-300 text-slate-600 hover:border-slate-400"
                     }`}
                   >
-                    <X className="h-5 w-5 mr-2" />
-                    No
+                    <X className="h-4 w-4 mr-2" />
+                    Deshabilitada
                   </button>
                 </div>
               </div>
-  
-              {/* Sección de datos adicionales con acordeón */}
-              <div className="border rounded-lg overflow-hidden">
+
+              {/* Datos Adicionales */}
+              <div className="border border-slate-200 rounded-xl overflow-hidden">
                 <button
                   onClick={() => setShowDatosAdicionales(!showDatosAdicionales)}
-                  className="w-full flex justify-between items-center p-3 bg-gray-50 hover:bg-gray-100 transition-colors"
+                  className="w-full flex justify-between items-center p-4 bg-slate-50 hover:bg-slate-100 transition-colors"
                 >
-                  <span className="font-semibold">Datos Adicionales</span>
+                  <span className="text-sm font-semibold text-slate-800">Datos Adicionales</span>
                   {showDatosAdicionales ? (
-                    <ChevronUp className="h-5 w-5" />
+                    <ChevronUp className="h-4 w-4 text-slate-600" />
                   ) : (
-                    <ChevronDown className="h-5 w-5" />
+                    <ChevronDown className="h-4 w-4 text-slate-600" />
                   )}
                 </button>
                 
                 {showDatosAdicionales && (
-                  <div className="p-4 grid grid-cols-2 gap-4">
-                    <div>
-                      <p className="font-semibold mb-1">Provincia:</p>
-                      <p className="p-2 bg-gray-50 rounded border">
-                        {usuario.provincia || "No especificado"}
-                      </p>
+                  <div className="p-4 space-y-4">
+                    <div className="grid grid-cols-2 gap-4">
+                      <div>
+                        <p className="text-xs font-medium text-slate-600 mb-1">Provincia</p>
+                        <p className="text-sm text-slate-800 p-2 bg-slate-50 rounded-lg">
+                          {usuario.provincia || "No especificado"}
+                        </p>
+                      </div>
+                      <div>
+                        <p className="text-xs font-medium text-slate-600 mb-1">Municipio</p>
+                        <p className="text-sm text-slate-800 p-2 bg-slate-50 rounded-lg">
+                          {usuario.municipio || "No especificado"}
+                        </p>
+                      </div>
+                      <div>
+                        <p className="text-xs font-medium text-slate-600 mb-1">Localidad</p>
+                        <p className="text-sm text-slate-800 p-2 bg-slate-50 rounded-lg">
+                          {usuario.localidad || "No especificado"}
+                        </p>
+                      </div>
+                      <div>
+                        <p className="text-xs font-medium text-slate-600 mb-1">Código Postal</p>
+                        <p className="text-sm text-slate-800 p-2 bg-slate-50 rounded-lg">
+                          {usuario.codigo_postal || "No especificado"}
+                        </p>
+                      </div>
                     </div>
-                    <div>
-                      <p className="font-semibold mb-1">Municipio:</p>
-                      <p className="p-2 bg-gray-50 rounded border">
-                        {usuario.municipio || "No especificado"}
-                      </p>
-                    </div>
-                    <div>
-                      <p className="font-semibold mb-1">Localidad:</p>
-                      <p className="p-2 bg-gray-50 rounded border">
-                        {usuario.localidad || "No especificado"}
-                      </p>
-                    </div>
-                    <div>
-                      <p className="font-semibold mb-1">Código Postal:</p>
-                      <p className="p-2 bg-gray-50 rounded border">
-                        {usuario.codigo_postal || "No especificado"}
-                      </p>
-                    </div>
-                    <div>
-                      <p className="font-semibold mb-1">Fecha de Registro:</p>
-                      <p className="p-3 bg-gray-50 rounded border min-h-[3rem]">
-                        {new Date(usuario.created_at).toLocaleDateString("es-ES", {
-                          day: "2-digit",
-                          month: "2-digit",
-                          year: "numeric",
-                          hour: "2-digit",
-                          minute: "2-digit"
-                        })}
-                      </p>
+                    
+                    <div className="bg-slate-50 rounded-lg p-3">
+                      <div className="flex items-center space-x-3">
+                        <Calendar className="h-4 w-4 text-slate-500" />
+                        <div>
+                          <p className="text-xs font-medium text-slate-600 mb-1">Fecha de Registro</p>
+                          <p className="text-sm text-slate-800">
+                            {new Date(usuario.created_at).toLocaleDateString("es-ES", {
+                              day: "2-digit",
+                              month: "2-digit",
+                              year: "numeric",
+                              hour: "2-digit",
+                              minute: "2-digit"
+                            })}
+                          </p>
+                        </div>
+                      </div>
                     </div>
                   </div>
                 )}
               </div>
             </div>
           </div>
-  
-          {/* Botones de acción */}
-          <div className="flex justify-end space-x-4 mt-8">
+        </div>
+
+        {/* Footer */}
+        <div className="border-t border-slate-200 p-6 bg-slate-50">
+          <div className="flex justify-end space-x-3">
             <button
               onClick={onClose}
               disabled={isLoading}
-              className="px-6 py-2 bg-gray-200 text-gray-800 rounded-lg hover:bg-gray-300 transition-colors"
+              className="px-6 py-2.5 text-slate-700 bg-white border border-slate-300 rounded-lg hover:bg-slate-50 transition-colors font-medium"
             >
               Cancelar
             </button>
-            
             <button
               onClick={handleGuardar}
               disabled={isLoading}
-              className="px-6 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors flex items-center"
+              className="px-6 py-2.5 bg-slate-900 text-white rounded-lg hover:bg-slate-800 transition-colors font-medium flex items-center disabled:opacity-50"
             >
               {isLoading ? (
                 <>
-                  <svg className="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                  </svg>
+                  <div className="animate-spin rounded-full h-4 w-4 border-2 border-white border-t-transparent mr-2"></div>
                   Guardando...
                 </>
-              ) : "Guardar Cambios"}
+              ) : (
+                "Guardar Cambios"
+              )}
             </button>
           </div>
         </div>
       </div>
-    );
-  }
+    </div>
+  );
+}
