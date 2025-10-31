@@ -18,7 +18,7 @@ const sendEmail = async (demandaData: any, pagoData: any) => {
   const mailOptions = {
     from: process.env.GMAIL_USER,
     to: pagoData.correo_pagador, // Correo del pagador
-    subject: `Pago aprobado para la demanda de NesecitoEsto!`,
+    subject: `Pago aprobado para la demanda #${demandaData.id} de NesecitoEsto!`,
     text: `
       Hola ${pagoData.nombre_pagador},
 
@@ -117,3 +117,4 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     res.status(405).end(`Método ${req.method} no permitido`);
   }
 }
+
