@@ -9,7 +9,8 @@ import {
   CreditCard,
   Home,
   Users,
-  Layers
+  Layers,
+  Mail
 } from "lucide-react";
 
 export default function Sidebar() {
@@ -23,6 +24,7 @@ export default function Sidebar() {
     { href: "/tipos", label: "Tipos", icon: <Layers className="h-5 w-5" /> },
     { href: "/pagos", label: "Pagos", icon: <CreditCard className="h-5 w-5" /> },
     { href: "/usuarios", label: "Usuarios", icon: <Users className="h-5 w-5" /> },
+    { href: "/envios", label: "Envío Mails", icon: <Mail className="h-5 w-5" /> },
   ];
 
   return (
