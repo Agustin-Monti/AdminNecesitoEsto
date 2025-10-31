@@ -37,7 +37,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     const mailOptions = {
       from: process.env.GMAIL_USER,
       to: email_contacto,
-      subject: `✅ Tu demanda ha sido aceptada - Detalle: ${demanda_detalle}`,
+      subject: `✅ Tu demanda #${demanda_id} ha sido aceptada - Detalle: ${demanda_detalle}`,
       html: `
         <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
           <h2 style="color: #2563eb;">¡Buena noticia, ${responsable_solicitud}!</h2>
@@ -67,3 +67,4 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     res.status(500).json({ message: 'Error enviando el correo de aceptación' });
   }
 }
+
