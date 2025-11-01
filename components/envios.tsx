@@ -51,13 +51,38 @@ export default function EnvioMails() {
     cargarUsuarios();
   }, []);
 
+  // En tu componente, actualiza el handleSubmit:
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    
+    const usuariosFiltrados = formData.destinatarios === 'todos' 
+      ? usuarios 
+      : usuarios.filter(user => usuariosSeleccionados.includes(user.id));
+    
+    if (usuariosFiltrados.length === 0) {
+      setResultado({
+        tipo: 'error',
+        mensaje: '❌ No hay usuarios seleccionados para enviar'
+      });
+      return;
+    }
+
+    // Límite más estricto para producción
+    if (usuariosFiltrados.length > 10) {
+      setResultado({
+        tipo: 'error',
+        mensaje: `❌ Límite producción: máximo 10 usuarios por envío. 
+                Seleccionados: ${usuariosFiltrados.length}. 
+                Divide en lotes más pequeños.`
+      });
+      return;
+    }
+
     setLoading(true);
     setResultado(null);
 
     try {
-      const response = await fetch('/api/send-bulk-email', {
+      const response = await fetch('/api/admin/send-bulk-email', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -65,8 +90,8 @@ export default function EnvioMails() {
         body: JSON.stringify({
           ...formData,
           usuariosIds: formData.destinatarios === 'todos' 
-            ? usuarios.map(u => u.id) 
-            : usuariosSeleccionados
+            ? usuarios.map(u => u.id).slice(0, 10)
+            : usuariosSeleccionados.slice(0, 10)
         }),
       });
 
@@ -75,9 +100,12 @@ export default function EnvioMails() {
       if (response.ok) {
         setResultado({
           tipo: 'exito',
-          mensaje: `✅ Correos enviados exitosamente a ${data.enviados} destinatarios`
+          mensaje: `✅ ${data.mensaje}${data.sugerencia ? ` ${data.sugerencia}` : ''}`
         });
-        setFormData({ asunto: '', mensaje: '', destinatarios: 'todos' });
+        // No limpiar el formulario si hay usuarios pendientes
+        if (data.totalUsuarios === data.totalEnviados) {
+          setFormData({ asunto: '', mensaje: '', destinatarios: 'todos' });
+        }
       } else {
         setResultado({
           tipo: 'error',
