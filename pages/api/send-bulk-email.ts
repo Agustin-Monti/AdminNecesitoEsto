@@ -82,7 +82,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   }
 
   // Verificar credenciales
-  if (!process.env.GMAIL_USER || !process.env.GMAIL_APP_PASSWORD) {
+  if (!process.env.GMAIL_USER || !process.env.GMAIL_PASSWORD) {
     return res.status(500).json({ 
       error: 'Configuración de email incompleta' 
     });
@@ -147,3 +147,4 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     });
   }
 }
+
